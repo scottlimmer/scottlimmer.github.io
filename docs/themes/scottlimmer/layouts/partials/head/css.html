@@ -1,0 +1,15 @@
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=libre-baskerville:700|source-code-pro:400|source-sans-pro:400,400i,700,700i" rel="stylesheet" />
+{{- with resources.Get "css/syntax.css" }}
+<link rel="stylesheet" href="{{ .RelPermalink }}">
+{{- end }}
+{{ $opts := dict "transpiler" "libsass" "targetPath" "css/main.css" }}
+{{- with resources.Get "css/main.scss" | toCSS $opts }}
+  {{- if eq hugo.Environment "development" }}
+    <link rel="stylesheet" href="{{ .RelPermalink }}">
+  {{- else }}
+    {{- with . | minify | fingerprint }}
+      <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
+    {{- end }}
+  {{- end }}
+{{- end }}

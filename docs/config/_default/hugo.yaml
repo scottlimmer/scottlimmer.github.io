@@ -1,0 +1,13 @@
+baseURL: 'https://scottlimmer.github.com'
+languageCode: 'en-au'
+title: 'scottlimmer'
+themesDir: 'themes'
+theme: 'scottlimmer'
+
+markup:
+  goldmark:
+    parser:
+      attribute:
+        block: true
+  highlight:
+    noClasses: false
