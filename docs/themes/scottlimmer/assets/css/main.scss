@@ -1,0 +1,73 @@
+body {
+  color: #444;
+  font-family: "Source Sans Pro", sans-serif;
+  line-height: 1.4;
+  margin: 0 auto;
+  max-width: 75ch;
+  font-size: 1.2rem;
+}
+
+header {
+  border-bottom: 1px solid #222;
+  margin-bottom: 1rem;
+}
+
+footer {
+  border-top: 1px solid #222;
+  margin-top: 1rem;
+}
+
+a {
+  color: #00e;
+  text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Libre Baskerville", serif;
+}
+
+pre {
+  overflow-x: auto;
+}
+
+code, pre {
+  font-family: "Source Code Pro", monospace;
+  font-size: 1rem;
+}
+
+code {
+  background: #eee;
+}
+
+.chroma {
+  padding: 0.5em;
+}
+
+h2 + h3,
+h3 + h4,
+h4 + h5,
+h5 + h6 {
+  margin-top: -0.3em;
+}
+
+blockquote {
+  padding: 0.5em;
+  margin: 0;
+
+  p {
+    margin: 0;
+  }
+
+  &.success {
+    background: #e3ffda;
+  }
+
+  &.danger {
+    background: #ffdcdc;
+  }
+
+  &.note {
+    background: #dadaff;
+  }
+}
+
