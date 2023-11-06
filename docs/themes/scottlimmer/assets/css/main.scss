@@ -1,10 +1,10 @@
 body {
   color: #444;
-  font-family: "Source Sans Pro", sans-serif;
-  line-height: 1.4;
+  font-family: "Open Sans", sans-serif;
+  line-height: 1.5;
   margin: 0 auto;
   max-width: 75ch;
-  font-size: 1.2rem;
+  font-size: 1.05em;
 }
 
 header {
@@ -23,7 +23,7 @@ a {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Libre Baskerville", serif;
+  font-family: "Lora", serif;
 }
 
 pre {
@@ -32,7 +32,7 @@ pre {
 
 code, pre {
   font-family: "Source Code Pro", monospace;
-  font-size: 1rem;
+  font-size: 0.9em;
 }
 
 code {
@@ -69,5 +69,13 @@ blockquote {
   &.note {
     background: #dadaff;
   }
+}
+p {
+  code {
+    font-size: inherit;
+  }
+}
+h2 {
+  margin-top: 2em;
 }
 

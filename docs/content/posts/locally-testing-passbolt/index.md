@@ -70,7 +70,8 @@ Update your local hosts file for the value you provided in `APP_FULL_BASE_URL`
 - Create new feature branch. I normally forward the email from Passbolt announcing a new version to the helpdesk so there is a ticket to reference
 - Determine latest version from: https://hub.docker.com/r/passbolt/passbolt/tags
     - We want the latest tag that looks like `<major>.<minor>.<patch>-<build>-ce`
-    - ![[Pasted image 20231102162711.png]]
+
+    ![passbolt-docker-tag.png](passbolt-docker-tag.png)
 
 - Compare `docker-compose.yaml` to https://github.com/passbolt/passbolt_docker/blob/master/docker-compose/docker-compose-ce.yaml for version/configuration changes
     - The `env_file`, `${DB_PASSWORD}`, `APP_FULL_BASE_URL` and ports `9480:80` customisations are deliberate and required for our setup.
