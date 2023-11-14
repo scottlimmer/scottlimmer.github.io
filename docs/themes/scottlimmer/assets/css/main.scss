@@ -1,10 +1,10 @@
 body {
-  background: #fffff7;
+  background: #FFF;
   color: #444;
   font-family: "Open Sans", sans-serif;
   line-height: 1.5;
   margin: 0 auto;
-  max-width: 75ch;
+  max-width: 100ch;
   font-size: 1em;
 }
 
@@ -71,7 +71,10 @@ p, li {
 }
 
 .chroma {
-  padding: 0.5em;
+  padding: 1.5em;
+  border: solid #e8e8e8;
+  border-width: 0 0 2px 0;
+  line-height: 1.6;
 }
 
 h1 + time {
@@ -98,7 +101,7 @@ blockquote {
   }
 
   &.success {
-    background: #e3ffda;
+    background: #e6f0df;
   }
 
   &.danger {
@@ -114,9 +117,14 @@ main {
   h1 {
     font-size: 2.5em;
   }
+
+  p, li {
+    max-width: 75ch;
+  }
 }
 
 h2 {
   margin-top: 2em;
 }
+
 
