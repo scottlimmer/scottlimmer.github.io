@@ -148,12 +148,12 @@ docker exec -it passbolt-passbolt-1 chmod 440 \
 - You should now be logged in
 
 ## Test new install
-#### From browser
-- [ ] Edit a password and view it in plaintext
-- [ ] Text search box
-- [ ] Go to users and check group membership
+### From browser
+- Edit a password and view it in plaintext
+- Text search box
+- Go to users and check group membership
 
-#### From command line
+### From command line
 ```bash
 sudo -i
 cd /path/to/passbolt/directory

@@ -1,15 +1,38 @@
 body {
+  background: #fffff7;
   color: #444;
   font-family: "Open Sans", sans-serif;
   line-height: 1.5;
   margin: 0 auto;
   max-width: 75ch;
-  font-size: 1.05em;
+  font-size: 1em;
 }
 
 header {
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid #aaa;
   margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+
+  nav {
+    flex-grow: 1;
+    text-align: right;
+
+    li {
+      display: inline-block;
+      list-style-type: none;
+      padding-left: 1em;
+
+      a {
+        color: inherit;
+        border: none;
+      }
+
+      a:hover {
+        font-weight: bold;
+      }
+    }
+  }
 }
 
 footer {
@@ -18,8 +41,9 @@ footer {
 }
 
 a {
-  color: #00e;
+  color: #0c65d7;
   text-decoration: none;
+  border-bottom: 1px solid #0c65d7;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -32,15 +56,30 @@ pre {
 
 code, pre {
   font-family: "Source Code Pro", monospace;
-  font-size: 0.9em;
+  font-size: 0.95em;
 }
 
 code {
   background: #eee;
 }
 
+p, li {
+  code {
+    background: transparent;
+    color: #a524cd;
+  }
+}
+
 .chroma {
   padding: 0.5em;
+}
+
+h1 + time {
+  margin-top: -1.3em;
+  display: block;
+  font-size: 0.95em;
+  text-transform: uppercase;
+  color: #666;
 }
 
 h2 + h3,
@@ -70,11 +109,13 @@ blockquote {
     background: #dadaff;
   }
 }
-p {
-  code {
-    font-size: inherit;
+
+main {
+  h1 {
+    font-size: 2.5em;
   }
 }
+
 h2 {
   margin-top: 2em;
 }

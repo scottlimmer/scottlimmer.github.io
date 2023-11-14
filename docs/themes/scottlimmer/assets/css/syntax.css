@@ -1,5 +1,5 @@
-/* Background */ .bg { background-color: #f0f3f3; }
-/* PreWrapper */ .chroma { background-color: #f0f3f3; }
+/* Background */ .bg { background-color: #f7f6ea; }
+/* PreWrapper */ .chroma { background-color: #f7f6ea; }
 /* Other */ .chroma .x {  }
 /* Error */ .chroma .err { color: #aa0000; background-color: #ffaaaa }
 /* CodeLine */ .chroma .cl {  }
@@ -65,10 +65,10 @@
 /* OperatorWord */ .chroma .ow { color: #000000; font-weight: bold }
 /* Punctuation */ .chroma .p {  }
 /* Comment */ .chroma .c { color: #0099ff; font-style: italic }
-/* CommentHashbang */ .chroma .ch { color: #0099ff; font-style: italic }
-/* CommentMultiline */ .chroma .cm { color: #0099ff; font-style: italic }
-/* CommentSingle */ .chroma .c1 { color: #0099ff; font-style: italic }
-/* CommentSpecial */ .chroma .cs { color: #0099ff; font-weight: bold; font-style: italic }
+/* CommentHashbang */ .chroma .ch { color: #0090ef; font-style: italic }
+/* CommentMultiline */ .chroma .cm { color: #0090ef; font-style: italic }
+/* CommentSingle */ .chroma .c1 { color: #0090ef; font-style: italic }
+/* CommentSpecial */ .chroma .cs { color: #0090ef; font-weight: bold; font-style: italic }
 /* CommentPreproc */ .chroma .cp { color: #009999 }
 /* CommentPreprocFile */ .chroma .cpf { color: #009999 }
 /* Generic */ .chroma .g {  }

@@ -1,6 +1,6 @@
 <link rel="preconnect" href="https://fonts.bunny.net">
 <link href="https://fonts.bunny.net/css?family=lora:600|open-sans:400,400i,700|source-code-pro:400" rel="stylesheet" />
-{{- with resources.Get "css/syntax.css" }}
+{{- with resources.Get "css/syntax.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ .RelPermalink }}">
 {{- end }}
 {{ $opts := dict "transpiler" "libsass" "targetPath" "css/main.css" }}
