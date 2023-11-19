@@ -1,5 +1,5 @@
-/* Background */ .bg { background-color: #f9f9f9; }
-/* PreWrapper */ .chroma { background-color: #f9f9f9; }
+/* Background */ .bg { background-color: #f4f4f4; }
+/* PreWrapper */ .chroma { background-color: #f4f4f4; }
 /* Other */ .chroma .x {  }
 /* Error */ .chroma .err { color: #aa0000; background-color: #ffaaaa }
 /* CodeLine */ .chroma .cl {  }

@@ -17,6 +17,10 @@ Expand with docker-compose with mailpit example.
 #### Get a copy of the database
 From the production database
 
+##### Level 5
+
+###### Level 6
+
 ```bash
 sudo -i
 cd /var/www_data/passbolt

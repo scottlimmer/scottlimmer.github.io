@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-HUGO_SERVER_PORT=80
+HUGO_SERVER_PORT=1313
 HUGO_DOCKER_IMAGE=hugomods/hugo:exts
 SITE_ROOT="$(pwd)/docs"
 

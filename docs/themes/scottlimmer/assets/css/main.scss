@@ -1,130 +1,172 @@
+:root {
+    --body-bg: #FAFAFA;
+    --body-fg: #444;
+}
+
 body {
-  background: #FFF;
-  color: #444;
-  font-family: "Open Sans", sans-serif;
-  line-height: 1.5;
-  margin: 0 auto;
-  max-width: 100ch;
-  font-size: 1em;
+    background: var(--body-bg);
+    color: var(--body-fg);
+    font-family: "Nunito Sans", sans-serif;
+    line-height: 1.5;
+    margin: 0 auto;
+    max-width: 100ch;
+    font-size: 1em;
+    padding: 1em;
 }
 
-header {
-  border-bottom: 1px solid #aaa;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
+body > header {
+    border-bottom: 1px dotted #444;
+    margin-bottom: 5rem;
+    display: flex;
+    align-items: center;
 
-  nav {
-    flex-grow: 1;
-    text-align: right;
-
-    li {
-      display: inline-block;
-      list-style-type: none;
-      padding-left: 1em;
-
-      a {
-        color: inherit;
-        border: none;
-      }
-
-      a:hover {
-        font-weight: bold;
-      }
+    h1 {
+        font-weight: 800;
     }
-  }
+
+    nav {
+        flex-grow: 1;
+        text-align: right;
+
+        li {
+            display: inline-block;
+            list-style-type: none;
+            padding-left: 1em;
+
+            a {
+                color: inherit;
+                border: none;
+            }
+
+            a:hover,
+            a.active {
+                border-bottom: 2px solid #444;
+                padding-bottom: 5px;
+            }
+        }
+    }
 }
 
-footer {
-  border-top: 1px solid #222;
-  margin-top: 1rem;
+body > footer {
+    border-top: 1px dotted #444;
+    margin-top: 5rem;
 }
 
 a {
-  color: #0c65d7;
-  text-decoration: none;
-  border-bottom: 1px solid #0c65d7;
+    color: #0c65d7;
+    text-decoration: none;
+    border-bottom: 1px solid #0c65d7;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Lora", serif;
+    font-family: "Raleway", sans-serif;
+    font-weight: 600;
+}
+
+h1 {
+    font-size: 2.1rem;
+}
+
+h2 {
+    font-size: 1.9rem;
+}
+
+h3 {
+    font-size: 1.7rem;
+}
+
+h4 {
+    font-size: 1.5rem;
+}
+
+h5 {
+    font-size: 1.3rem;
+}
+
+h6 {
+    font-size: 1.1rem;
 }
 
 pre {
-  overflow-x: auto;
+    overflow-x: auto;
 }
 
 code, pre {
-  font-family: "Source Code Pro", monospace;
-  font-size: 0.95em;
+    font-family: "Source Code Pro", monospace;
+    font-size: 0.95em;
 }
 
 code {
-  background: #eee;
+    background: #eee;
 }
 
 p, li {
-  code {
-    background: transparent;
-    color: #a524cd;
-  }
+    code {
+        background: transparent;
+        color: #771197;
+    }
 }
 
+
 .chroma {
-  padding: 1.5em;
-  border: solid #e8e8e8;
-  border-width: 0 0 2px 0;
-  line-height: 1.6;
+    padding: 1.5em;
+    border: solid #e8e8e8;
+    border-width: 0 0 2px 0;
+    line-height: 1.6;
+
+    code {
+        color: inherit;
+    }
 }
 
 h1 + time {
-  margin-top: -1.3em;
-  display: block;
-  font-size: 0.95em;
-  text-transform: uppercase;
-  color: #666;
+    margin-top: -1.3em;
+    display: block;
+    font-size: 0.95em;
+    text-transform: uppercase;
+    color: #666;
 }
 
 h2 + h3,
 h3 + h4,
 h4 + h5,
 h5 + h6 {
-  margin-top: -0.3em;
+    margin-top: -0.3em;
 }
 
 blockquote {
-  padding: 0.5em;
-  margin: 0;
-
-  p {
+    padding: 0.5em;
     margin: 0;
-  }
 
-  &.success {
-    background: #e6f0df;
-  }
+    p {
+        margin: 0;
+    }
 
-  &.danger {
-    background: #ffdcdc;
-  }
+    &.success {
+        background: #e6f0df;
+    }
 
-  &.note {
-    background: #dadaff;
-  }
+    &.danger {
+        background: #ffdcdc;
+    }
+
+    //TODO: add warning and important clases
+
+    &.note {
+        background: #dadaff;
+    }
 }
 
 main {
-  h1 {
-    font-size: 2.5em;
-  }
+    h1 {
+        font-size: 2.5em;
+    }
 
-  p, li {
-    max-width: 75ch;
-  }
+    p, li {
+        max-width: 75ch;
+    }
+
+    h2 {
+        margin-top: 2em;
+    }
 }
-
-h2 {
-  margin-top: 2em;
-}
-
-
