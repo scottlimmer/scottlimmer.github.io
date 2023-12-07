@@ -15,7 +15,15 @@ case "$1" in
     ;;
   serve)
     shift
-    docker_run hugo --environment local server --bind 0.0.0.0 "$@"
+    docker_run hugo --environment local server --poll 700ms --bind 0.0.0.0 "$@"
+    ;;
+  post)
+    shift
+    docker_run hugo new content posts/"$1".md
+    ;;
+  page)
+    shift
+    docker_run hugo new content "$1".md
     ;;
   publish)
     shift

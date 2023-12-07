@@ -1,6 +1,6 @@
 +++
 title = 'Isolating VMs in Proxmox using VLANs'
-date = 2023-11-06T10:00:35Z
+date = 2023-11-20T10:00:35Z
 draft = true
 tags = [ 'proxmox', 'pfsense', 'networking' ]
 +++
@@ -30,18 +30,17 @@ a checkbox on the interface.
 
 > You'll need to restart your Proxmox server for this change to take effect. Applying the configuration is not
 > sufficient.
-> {.important}
+{.important}
 
 ## Pfsense
 
-~~Most~~ All of the configuration work is done by PFSense. Using PFSense we can:
+~~Most~~ All the configuration work is done by PFSense. Using PFSense we can:
 
-- assign dynamic and static IPs,
-- prevent one VLAN accessing another,
+- assign [dynamic](#configurating-the-dhcp-server) and [static](#configuring-static-ip-assignments) IPs,
+- [prevent one VLAN accessing another](#configuring-nat-rules),
 - ensure we can still access VLAN from our network,
 - allow the access from WAN traffic
 
-[//]: # (link above dot points to headings)
 
 [//]: # (add note/link to Pfsense theme)
 

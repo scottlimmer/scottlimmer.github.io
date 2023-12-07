@@ -1,4 +1,5 @@
 {{ define "main" }}
+<article>
   <header>
     <h1>{{ .Title }}</h1>
     {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
@@ -9,8 +10,12 @@
 
 
   {{ .Content }}
+  <footer>
   {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
-<!--  TODO Add instruction to report issues via github PR -->
 
-  <a href="https://github.com/scottlimmer/scottlimmer.github.io/blob/main/docs/content/{{ .File.Path }}">{{ .File.Path }}</a>
+
+  {{ partial "github.html" . }}
+  </footer>
+
+</article>
 {{ end }}
