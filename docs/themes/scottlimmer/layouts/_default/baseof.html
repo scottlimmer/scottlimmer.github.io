@@ -4,19 +4,22 @@
   {{ partial "head.html" . }}
 </head>
 <body>
-  <header>
-    {{ partial "header.html" . }}
-  </header>
+  <sidebar>
+    {{ partial "sidebar.html" . }}
+  </sidebar>
 
   {{ $mainClass := "" }}
   {{ if (eq .Kind "home") }}
     {{ $mainClass = "home" }}
   {{ end }}
   <main class="{{ $mainClass }}">
-    {{ block "main" . }}{{ end }}
+    <article>
+      {{ block "main" . }}{{ end }}
+    </article>
+    <footer>
+      {{ partial "footer.html" . }}
+    </footer>
   </main>
-  <footer>
-    {{ partial "footer.html" . }}
-  </footer>
+
 </body>
 </html>

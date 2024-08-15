@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Work on scottlimmer</title>
+    <link>http://localhost:1313/work/</link>
+    <description>Recent content in Work on scottlimmer</description>
+    <generator>Hugo</generator>
+    <language>en-au</language>
+    <lastBuildDate>Mon, 17 Jun 2024 11:30:08 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/work/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Victorian Wader Study Group</title>
+      <link>http://localhost:1313/work/victorian-wader-study-group/</link>
+      <pubDate>Mon, 17 Jun 2024 11:30:08 +0000</pubDate>
+      <guid>http://localhost:1313/work/victorian-wader-study-group/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

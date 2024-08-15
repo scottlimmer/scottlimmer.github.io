@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Database on scottlimmer</title>
+    <link>http://localhost:1313/tags/database/</link>
+    <description>Recent content in Database on scottlimmer</description>
+    <generator>Hugo</generator>
+    <language>en-au</language>
+    <lastBuildDate>Tue, 09 Jul 2024 11:28:47 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/database/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Detecting decimal from Oracle number type</title>
+      <link>http://localhost:1313/posts/detecting_decimal_from_oracle_number_type/</link>
+      <pubDate>Tue, 09 Jul 2024 11:28:47 +0000</pubDate>
+      <guid>http://localhost:1313/posts/detecting_decimal_from_oracle_number_type/</guid>
+      <description>Motivation Detecting specific dataypes for parquet file generation Data https://www.kaggle.com/datasets/arnavsmayan/fitness-tracker-dataset Version Oracle Database 23ai Free Release 23.0.0.0.0 Setup Imported dataset 5 times for a total of 5 million rows Created index CREATE INDEX sleep_hrs_idx ON FITNESS.FITNESS_TRACKER (&amp;#34;sleep_hours&amp;#34;); Tests Query Time SELECT COUNT(*) FROM FITNESS.FITNESS_TRACKER WHERE ROUND(&amp;quot;sleep_hours&amp;quot;) != &amp;quot;sleep_hours&amp;quot;; 0.100s SELECT COUNT(*) FROM FITNESS.FITNESS_TRACKER WHERE TRUNC(&amp;quot;sleep_hours&amp;quot;) != &amp;quot;sleep_hours&amp;quot;; 0.100s SELECT COUNT(*) FROM FITNESS.FITNESS_TRACKER WHERE FLOOR(&amp;quot;sleep_hours&amp;quot;) != &amp;quot;sleep_hours&amp;quot;; 0.107s SELECT COUNT(*) FROM FITNESS.</description>
+    </item>
+  </channel>
+</rss>

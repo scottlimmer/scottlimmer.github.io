@@ -6,7 +6,7 @@ SITE_ROOT="$(pwd)/docs"
 
 
 docker_run() {
-  docker run -v "$SITE_ROOT":/src --rm -p $HUGO_SERVER_PORT:1313 "$HUGO_DOCKER_IMAGE" "$@"
+  docker run -v "$SITE_ROOT":/src --rm -p $HUGO_SERVER_PORT:1313 -u $(id -u):$(id -g) "$HUGO_DOCKER_IMAGE" "$@"
 }
 
 case "$1" in

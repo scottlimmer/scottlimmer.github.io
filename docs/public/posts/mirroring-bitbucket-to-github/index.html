@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en-au" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Mirroring Bitbucket to Github | scottlimmer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=REM:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/syntax.min.7e1c034d92eb72a6eaab11effdbcbe9c91fd5d6db1c6df150c5d597be3797feb.css">
+
+      <link rel="stylesheet" href="/css/main.min.b60e6cbc5e0661b9cfd21fef4df778ed0be4e580a1b3e42d9fbb94f78a11d66d.css" integrity="sha256-tg5svF4GYbnP0h/vTfd47Qvk5YChs&#43;Qtn7uU94oR1m0=" crossorigin="anonymous">
+
+
+      <script src="/js/main.23cd0c7d837263b9eaeb96ee2d9ccfa2969daa3fa00fa1c1fe8701a9b87251a1.js" integrity="sha256-I80MfYNyY7nq65buLZzPopadqj&#43;gD6HB/ocBqbhyUaE=" crossorigin="anonymous"></script>
+
+
+</head>
+<body>
+  <sidebar>
+    <h1>scottlimmer</h1>
+
+  <nav class="primary">
+    <ul>
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a href="/about/">About</a>
+    </li>
+    <li>
+      <a href="/work/">Work</a>
+    </li>
+    <li>
+      <a aria-current="true" class="ancestor" href="/posts/">Posts</a>
+    </li>
+    <li>
+      <a href="/tags/">Tags</a>
+    </li>
+    </ul>
+  </nav>
+
+
+  </sidebar>
+
+  
+  
+  <main class="">
+    <article>
+      
+<header>
+  <h1>Mirroring Bitbucket to Github</h1>
+  
+  
+  <time datetime="2023-11-21T09:48:25&#43;00:00">November 21, 2023</time>
+
+</header>
+
+
+<blockquote class="note"><p>Only works for public source repo</p>
+</blockquote>
+<h2 id="setting-up-keys">Setting up keys</h2>
+<h3 id="bitbucket">Bitbucket</h3>
+<p>Repository Settings -&gt; Pipelines -&gt; SSH Keys</p>
+<ul>
+<li>Default bitbucket key not secure enough for GitHub, need to select &lsquo;Use my own keys&rsquo;
+<ul>
+<li>If this option isn&rsquo;t available, you probably need to delete the existing key first</li>
+</ul>
+</li>
+<li>run <code>ssh-keygen -t ecdsa -b 256</code> locally to generate private/public keys
+<ul>
+<li>Copy into the fields provided</li>
+</ul>
+</li>
+</ul>
+<h3 id="github">Github</h3>
+<p>Create a new empty repo
+Settings -&gt; Security -&gt; Deploy Keys -&gt; Add deploy key</p>
+<ul>
+<li>Copy public key generated above.</li>
+<li>Enable write access</li>
+</ul>
+<h3 id="create-bitbucket-pipelinesyml-file">Create bitbucket-pipelines.yml file</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">atlassian/default-image:2</span><span class="w"> </span><span class="c"># This is needed to avoid gnutls_handshake issues</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">clone</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="c"># No point using default clone, we&#39;ll need to do it manually anyway</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">pipelines</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">default</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">step</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">script</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span>- <span class="l">git clone --mirror ${BITBUCKET_GIT_HTTP_ORIGIN} ./mirrored;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span>- <span class="l">cd ./mirrored;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span>- <span class="l">git push --mirror git@github.com:&lt;github-org&gt;/&lt;github-repo&gt;.git</span><span class="w">
+</span></span></span></code></pre></div><p>Default clone target originating branch see &ndash;branch. Therefore need to reclone.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">GIT_LFS_SKIP_SMUDGE</span><span class="o">=</span><span class="m">1</span> retry <span class="m">6</span> git clone --branch<span class="o">=</span><span class="s2">&#34;develop&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  https://x-token-auth:<span class="nv">$REPOSITORY_OAUTH_ACCESS_TOKEN</span>@bitbucket.org/<span class="nv">$BITBUCKET_REPO_FULL_NAME</span>.git <span class="nv">$BUILD_DIR</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Cloning into <span class="s1">&#39;/opt/atlassian/pipelines/agent/build&#39;</span>...
+</span></span></code></pre></div><h2 id="references">References</h2>
+<ul>
+<li><a href="https://blog.idrsolutions.com/how-to-sync-bitbucket-repo-to-github/">https://blog.idrsolutions.com/how-to-sync-bitbucket-repo-to-github/</a></li>
+<li><a href="https://medium.com/@dmitryshaposhnik/sync-bitbucket-repo-to-github-669458ea9a5e">https://medium.com/@dmitryshaposhnik/sync-bitbucket-repo-to-github-669458ea9a5e</a></li>
+<li><a href="https://community.atlassian.com/t5/Bitbucket-questions/Cannot-use-Bitbucket-Pipelines-failed-Handshake-failed/qaq-p/1467066">https://community.atlassian.com/t5/Bitbucket-questions/Cannot-use-Bitbucket-Pipelines-failed-Handshake-failed/qaq-p/1467066</a></li>
+<li><a href="https://stackoverflow.com/a/73246676">https://stackoverflow.com/a/73246676</a></li>
+</ul>
+<h2 id="todo">TODO</h2>
+<p>Resolve private repo syncing</p>
+
+<footer>
+  
+
+
+
+  <section class="github">
+    Found an issue? Submit a PR
+    
+    <a href="https://github.com/scottlimmer/scottlimmer.github.io/blob/main/docs/content/posts/mirroring-bitbucket-to-github.md">posts/mirroring-bitbucket-to-github.md</a>
+</section>
+
+</footer>
+
+    </article>
+    <footer>
+      <p>Copyright 2024. All rights reserved.</p>
+
+    </footer>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gpu on scottlimmer</title>
+    <link>http://localhost:1313/tags/gpu/</link>
+    <description>Recent content in Gpu on scottlimmer</description>
+    <generator>Hugo</generator>
+    <language>en-au</language>
+    <lastBuildDate>Wed, 10 Jul 2024 11:51:06 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/gpu/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Configuring GPU passthrough in Proxmox</title>
+      <link>http://localhost:1313/posts/configuring_gpu_passthrough_proxmox/</link>
+      <pubDate>Wed, 10 Jul 2024 11:51:06 +0000</pubDate>
+      <guid>http://localhost:1313/posts/configuring_gpu_passthrough_proxmox/</guid>
+      <description>This document provides instructions for configuring GPU passthrough on a Proxmox host with an AMD Ryzen 9 3900X CPU and an NVIDIA RTX 3060 GPU. It covers:&#xA;Preventing the nouveau and NVIDIA drivers from loading on the host by blacklisting them Passing through the GPU to a guest VM by configuring it as a raw PCI device with all functions enabled, without enabling it as the primary GPU Installing the NVIDIA drivers and utilities in the guest Ubuntu VM The instructions aim to simplify the process of GPU passthrough, which is often overcomplicated in other guides.</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en-au" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Determining cardinal direction of land parcels | scottlimmer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=REM:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/syntax.min.7e1c034d92eb72a6eaab11effdbcbe9c91fd5d6db1c6df150c5d597be3797feb.css">
+
+      <link rel="stylesheet" href="/css/main.min.75199a8d7da2359a47e3211cadcf70ecd1b72955e54bca17de124688259bc586.css" integrity="sha256-dRmajX2iNZpH4yEcrc9w7NG3KVXlS8oX3hJGiCWbxYY=" crossorigin="anonymous">
+
+
+      <script src="/js/main.23cd0c7d837263b9eaeb96ee2d9ccfa2969daa3fa00fa1c1fe8701a9b87251a1.js" integrity="sha256-I80MfYNyY7nq65buLZzPopadqj&#43;gD6HB/ocBqbhyUaE=" crossorigin="anonymous"></script>
+
+
+</head>
+<body>
+  <sidebar>
+    <h1>scottlimmer</h1>
+
+  <nav class="primary">
+    <ul>
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a href="/about/">About</a>
+    </li>
+    <li>
+      <a href="/work/">Work</a>
+    </li>
+    <li>
+      <a aria-current="true" class="ancestor" href="/posts/">Posts</a>
+    </li>
+    <li>
+      <a href="/tags/">Tags</a>
+    </li>
+    </ul>
+  </nav>
+
+
+  </sidebar>
+
+  
+  
+  <main class="">
+    <article>
+      
+<header>
+  <h1>Determining cardinal direction of land parcels</h1>
+  
+  
+  <time datetime="2024-06-18T12:09:25&#43;00:00">June 18, 2024</time>
+
+</header>
+
+
+<p>We&rsquo;re looking to move to Canberra and so, have begun searching for a home to purchase. One of our requirements is a property with a north-facing backyard.</p>
+<p>Due to <a href="https://en.wikipedia.org/wiki/Sun_path#Effect_of_the_Earth's_axial_tilt">axial tilt</a>, properties with a north facing backyard receive more sunlight and are therefore better for growing.</p>
+<p>Online real estate listings, if they contain any orientation information at all, usually do so as a <a href="https://en.wikipedia.org/wiki/Compass_rose">compass rose</a> on a floorplan. This isn&rsquo;t very accessible to people or computers.</p>
+<p>So, this lead me to the question:</p>
+<blockquote>
+<p>Is there a way to programmatically determine block orientation?</p>
+</blockquote>
+<p>Using open data, we can at least approximate the orientation of a land parcel</p>
+<h1 id="solution">Solution</h1>
+<h2 id="data">Data</h2>
+<ul>
+<li><a href="https://actmapi-actgov.opendata.arcgis.com/datasets/ACTGOV::actgov-block-current/about">ACTGOV BLOCK CURRENT</a></li>
+<li><a href="https://actmapi-actgov.opendata.arcgis.com/datasets/ACTGOV::actgov-addresses/about">ACTGOV ADDRESSES</a></li>
+</ul>
+<h2 id="code">Code</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</span></span></code></pre></div><h3 id="load-data-files">Load data files</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">addresses_gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;data/ACTGOV_ADDRESSES_-460557821198955827.gpkg&#34;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&#34;pyogrio&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">blocks_gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;data/ACTGOV_BLOCK_CURRENT_3920010383705203761.gpkg&#34;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&#34;pyogrio&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></div><h3 id="setup-geometry-columns">Setup geometry columns</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">addresses_gdf</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="s1">&#39;geometry&#39;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&#34;EPSG:7855&#34;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">blocks_gdf</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="s1">&#39;geometry&#39;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&#34;EPSG:7855&#34;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="drop-unwanted-columns">Drop unwanted columns</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">addresses_gdf</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;GlobalID&#39;</span><span class="p">,</span> <span class="s1">&#39;CRC_ID&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">blocks_gdf</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;VOLUME_FOLIO&#39;</span><span class="p">,</span> <span class="s1">&#39;LAST_UPDATE&#39;</span><span class="p">,</span> <span class="s1">&#39;DEPOSITED_PLAN_NO&#39;</span><span class="p">,</span> <span class="s1">&#39;AP_NUMBER&#39;</span><span class="p">,</span> <span class="s1">&#39;BLOCK_TYPE_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;DISTRICT_CODE&#39;</span><span class="p">,</span> <span class="s1">&#39;DIVISION_CODE&#39;</span><span class="p">,</span> <span class="s1">&#39;GlobalID&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Drop empty fields</span>
+</span></span><span class="line"><span class="cl"><span class="n">blocks_gdf</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;STRATUM_LOWEST_LEVEL&#39;</span><span class="p">,</span><span class="s1">&#39;STRATUM_HIGHEST_LEVEL&#39;</span><span class="p">,</span> <span class="s1">&#39;GROUND_LEVEL&#39;</span><span class="p">,</span> <span class="s1">&#39;BLOCK_KEY&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;STRATUM_DATUM_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;SENSITIVE_FLAG&#39;</span><span class="p">,</span> <span class="s1">&#39;TRANSITION_FLAG&#39;</span><span class="p">,</span> <span class="s1">&#39;WATER_FLAG&#39;</span> 
+</span></span><span class="line"><span class="cl"><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="normalise-column-names-for-the-join">Normalise column names for the join</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">blocks_gdf</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;BLOCK_NUMBER&#39;</span><span class="p">:</span> <span class="s1">&#39;BLOCK&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;SECTION_NUMBER&#39;</span><span class="p">:</span> <span class="s1">&#39;SECTION&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;DIVISION_NAME&#39;</span><span class="p">:</span> <span class="s1">&#39;DIVISION&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;DISTRICT_NAME&#39;</span><span class="p">:</span> <span class="s1">&#39;DISTRICT&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="join-dataframes">Join dataframes</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">merged_gdf</span> <span class="o">=</span> <span class="n">addresses_gdf</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">blocks_gdf</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DIVISION&#39;</span><span class="p">,</span> <span class="s1">&#39;DISTRICT&#39;</span><span class="p">,</span> <span class="s1">&#39;SECTION&#39;</span><span class="p">,</span> <span class="s1">&#39;BLOCK&#39;</span><span class="p">])</span>
+</span></span></code></pre></div><h3 id="rename-data-columns">Rename data columns</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">merged_gdf</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;geometry_x&#39;</span><span class="p">:</span> <span class="s1">&#39;address_geom&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;geometry_y&#39;</span><span class="p">:</span> <span class="s1">&#39;block_geom&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="drop-any-rows-without-an-address">Drop any rows without an address</h3>
+<p>I.e. any land parcels without an address</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">merged_gdf</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s1">&#39;ADDRESSES&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="calculate-direction-of-backyard">Calculate direction of backyard</h3>
+<ol>
+<li>
+<p>Calculate the angle between two points:</p>
+<ul>
+<li>The coordinate for the street address</li>
+<li>The center of the land parcel geometry</li>
+</ul>
+</li>
+<li>
+<p>Convert radians to degrees</p>
+</li>
+<li>
+<p>As atan2 is a cartestian function, the angle is calculated counter-clockwise from the x-axis. To convert to cardinal coordinates:</p>
+<ul>
+<li>Multiply by -1 to invert the rotation</li>
+<li>Add 270 to rotate to &lsquo;0 up&rsquo;</li>
+<li>Normalise to <code>0 &gt;= angle &lt; 360</code> by dividing by 360 and keeping the remainder</li>
+</ul>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">math</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">calc_direction</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">radian</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">row</span><span class="p">[</span><span class="s1">&#39;address_geom&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;block_centroid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">row</span><span class="p">[</span><span class="s1">&#39;address_geom&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;block_centroid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">x</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">degrees</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">radian</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">direction</span> <span class="o">=</span> <span class="p">(</span><span class="n">degrees</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">270</span><span class="p">)</span> <span class="o">%</span> <span class="mi">360</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">direction</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">merged_gdf</span><span class="p">[</span><span class="s1">&#39;block_centroid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merged_gdf</span><span class="p">[</span><span class="s1">&#39;block_geom&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">geom</span><span class="p">:</span> <span class="n">geom</span><span class="o">.</span><span class="n">centroid</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">merged_gdf</span><span class="p">[</span><span class="s1">&#39;facing&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merged_gdf</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">calc_direction</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="add-a-convenience-label">Add a convenience label</h3>
+<p>For this application, anything between North-West and North-East is considered North facing</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">direction</span><span class="p">(</span><span class="n">facing</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">facing</span> <span class="o">&gt;</span> <span class="mi">315</span> <span class="ow">or</span> <span class="n">facing</span> <span class="o">&lt;=</span> <span class="mi">45</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;N&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="n">facing</span> <span class="o">&gt;</span> <span class="mi">45</span> <span class="ow">and</span> <span class="n">facing</span> <span class="o">&lt;=</span> <span class="mi">135</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;E&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="n">facing</span> <span class="o">&gt;</span> <span class="mi">135</span> <span class="ow">and</span> <span class="n">facing</span> <span class="o">&lt;=</span> <span class="mi">225</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;S&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="n">facing</span> <span class="o">&gt;</span> <span class="mi">225</span> <span class="ow">and</span> <span class="n">facing</span> <span class="o">&lt;=</span> <span class="mi">315</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;W&#39;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="n">merged_gdf</span><span class="p">[</span><span class="s1">&#39;direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merged_gdf</span><span class="p">[</span><span class="s1">&#39;facing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">rows</span> <span class="o">=</span> <span class="mi">3</span>
+</span></span><span class="line"><span class="cl"><span class="n">cols</span> <span class="o">=</span> <span class="mi">4</span>
+</span></span><span class="line"><span class="cl"><span class="n">plot_base</span> <span class="o">=</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sample_df</span> <span class="o">=</span> <span class="n">merged_gdf</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">rows</span> <span class="o">*</span> <span class="n">cols</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sample_gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">sample_df</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># create figure and axes for Matplotlib</span>
+</span></span><span class="line"><span class="cl"><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">plot_base</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">plot_base</span> <span class="o">*</span> <span class="p">(</span><span class="n">rows</span> <span class="o">/</span> <span class="n">cols</span><span class="p">))))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span> <span class="p">,</span> <span class="n">sample_gdf</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>    
+</span></span><span class="line"><span class="cl">    <span class="n">subax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">cols</span><span class="p">),</span> <span class="n">i</span> <span class="o">%</span> <span class="n">cols</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">row</span> <span class="o">=</span> <span class="n">sample_gdf</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">subax</span><span class="o">.</span><span class="n">set_box_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">row</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="s1">&#39;block_geom&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">row</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">subax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&#34;white&#34;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">row</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="s1">&#39;address_geom&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">row</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">subax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">row</span><span class="o">.</span><span class="n">set_geometry</span><span class="p">(</span><span class="s1">&#39;block_centroid&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">row</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">subax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">subax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%.2f</span><span class="s2">&#34;</span> <span class="o">%</span> <span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">],</span> <span class="n">row</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;facing&#39;</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;block_centroid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;block_centroid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span></code></pre></div><p><img src="canberra-block-plots.png" alt="canberra-block-plots.png"></p>
+<h2 id="known-issues">Known issues</h2>
+<ul>
+<li>Corner blocks</li>
+<li>Odd shaped blocks</li>
+</ul>
+
+<footer>
+  
+
+
+
+  <section class="github">
+    Found an issue? Submit a PR
+    
+    <a href="https://github.com/scottlimmer/scottlimmer.github.io/blob/main/docs/content/posts/determine-block-direction/index.md">posts/determine-block-direction/index.md</a>
+</section>
+
+</footer>
+
+    </article>
+    <footer>
+      <p>Copyright 2024. All rights reserved.</p>
+
+    </footer>
+  </main>
+
+</body>
+</html>

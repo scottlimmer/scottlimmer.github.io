@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pfsense on scottlimmer</title>
+    <link>http://localhost:1313/tags/pfsense/</link>
+    <description>Recent content in Pfsense on scottlimmer</description>
+    <generator>Hugo</generator>
+    <language>en-au</language>
+    <lastBuildDate>Mon, 20 Nov 2023 10:00:35 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/pfsense/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Isolating VMs in Proxmox using VLANs</title>
+      <link>http://localhost:1313/posts/isolating-vms-in-proxmox-using-vlan/</link>
+      <pubDate>Mon, 20 Nov 2023 10:00:35 +0000</pubDate>
+      <guid>http://localhost:1313/posts/isolating-vms-in-proxmox-using-vlan/</guid>
+      <description>Proxmox + Pfsense are fantastic FOSS tools to run your own server virtualisation and home router. This tutorial adds VLAN tagging to an already existing Pfsense setup in a Proxmox managed VM.&#xA;VLAN presents a convenient way to isolate subnets for logical grouping and security. Some of the more common use cases for wanting to do this include:&#xA;isolating home automation devices (smart lights, security cameras, etc.) from your personal devices, creating a separate network for Wi-Fi guests, or segmenting a network to host a web server.</description>
+    </item>
+  </channel>
+</rss>

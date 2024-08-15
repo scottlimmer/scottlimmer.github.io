@@ -20,7 +20,7 @@ Thanks to Proxmox and Pfsense we can easily do this without requiring an expensi
 
 To use VLAN tagging in Proxmox we need to ensure our LAN bridge device is VLAN aware. This is a simple matter of ticking a checkbox on the interface.
 
-[//]: # (screenshot of VLAN aware tag)
+![proxmox_vlan_aware.png](proxmox_vlan_aware.png)
 
 > You'll need to restart your Proxmox server for this change to take effect. Applying the configuration is not
 > sufficient. 

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en-au" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Isolating VMs in Proxmox using VLANs | scottlimmer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=REM:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/syntax.min.7e1c034d92eb72a6eaab11effdbcbe9c91fd5d6db1c6df150c5d597be3797feb.css">
+
+      <link rel="stylesheet" href="/css/main.min.b60e6cbc5e0661b9cfd21fef4df778ed0be4e580a1b3e42d9fbb94f78a11d66d.css" integrity="sha256-tg5svF4GYbnP0h/vTfd47Qvk5YChs&#43;Qtn7uU94oR1m0=" crossorigin="anonymous">
+
+
+      <script src="/js/main.23cd0c7d837263b9eaeb96ee2d9ccfa2969daa3fa00fa1c1fe8701a9b87251a1.js" integrity="sha256-I80MfYNyY7nq65buLZzPopadqj&#43;gD6HB/ocBqbhyUaE=" crossorigin="anonymous"></script>
+
+
+</head>
+<body>
+  <sidebar>
+    <h1>scottlimmer</h1>
+
+  <nav class="primary">
+    <ul>
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a href="/about/">About</a>
+    </li>
+    <li>
+      <a href="/work/">Work</a>
+    </li>
+    <li>
+      <a aria-current="true" class="ancestor" href="/posts/">Posts</a>
+    </li>
+    <li>
+      <a href="/tags/">Tags</a>
+    </li>
+    </ul>
+  </nav>
+
+
+  </sidebar>
+
+  
+  
+  <main class="">
+    <article>
+      
+<header>
+  <h1>Isolating VMs in Proxmox using VLANs</h1>
+  
+  
+  <time datetime="2023-11-20T10:00:35&#43;00:00">November 20, 2023</time>
+
+</header>
+
+
+<p>Proxmox + Pfsense are fantastic FOSS tools to run your own server virtualisation and home router. This tutorial adds VLAN tagging to an already existing Pfsense setup in a Proxmox managed VM.</p>
+<p>VLAN presents a convenient way to isolate subnets for logical grouping and security. Some of the more common use cases for wanting to do this include:</p>
+<ul>
+<li>isolating home automation devices (smart lights, security cameras, etc.) from your personal devices,</li>
+<li>creating a separate network for Wi-Fi guests, or</li>
+<li>segmenting a network to host a web server.</li>
+</ul>
+<p>Thanks to Proxmox and Pfsense we can easily do this without requiring an expensive Layer 3 enterprise managed switch.</p>
+<h2 id="configuring-proxmox">Configuring proxmox</h2>
+<p>To use VLAN tagging in Proxmox we need to ensure our LAN bridge device is VLAN aware. This is a simple matter of ticking a checkbox on the interface.</p>
+<p><img src="proxmox_vlan_aware.png" alt="proxmox_vlan_aware.png"></p>
+<blockquote class="important"><p>You&rsquo;ll need to restart your Proxmox server for this change to take effect. Applying the configuration is not
+sufficient.</p>
+</blockquote>
+<h2 id="pfsense">Pfsense</h2>
+<p><del>Most</del> All the configuration work is done by PFSense. Using PFSense we can:</p>
+<ul>
+<li>assign <a href="#configuring-the-dhcp-server">dynamic</a> and <a href="#configuring-static-ip-assignments">static</a> IPs,</li>
+<li><a href="#configuring-nat-rules">prevent one VLAN accessing another</a>,</li>
+<li>ensure we can still access VLAN from our network,</li>
+<li>allow access from WAN traffic</li>
+</ul>
+<h3 id="adding-the-interface">Adding the interface</h3>
+<h4 id="add-the-vlan-interface">Add the VLAN interface</h4>
+<p>Navigate to <code>Interfaces -&gt; Assignments -&gt; VLANs</code> and add a new VLAN interface</p>
+<p><img src="add_vlan_interface.png" alt="add_vlan_interface.png"></p>
+<p>The parent interface should be your LAN network (The same interface you made VLAN aware in Proxmox)</p>
+<p>VLAN tag can be any value between 1 and 4094. Some devices default tag to 1, so it might be best to skip that.</p>
+<p>Give a meaningful description. Don&rsquo;t assume you&rsquo;ll remember that VLAN 10 was servers, VLAN 20 was cameras, etc. a year later.</p>
+<h4 id="assigning-the-interface">Assigning the interface</h4>
+<p>You should now be able to add your newly created VLAN in Interface Assignments</p>
+<p><img src="create_interface_from_vlan.png" alt="create_interface_from_vlan.png"></p>
+<p>This will add a new interface called <code>OPT1</code></p>
+<p><img src="added_interface.png" alt="added_interface.png"></p>
+<p>Click on the newly added interface to set some sensible values:</p>
+<h4 id="configuring-the-interface">Configuring the interface</h4>
+<p><img src="interface_settings.png" alt="interface_settings.png"></p>
+<p>Under <code>General Configuration</code> set the following values</p>
+<ul>
+<li>Enable interface</li>
+<li>Set an appropriate name</li>
+<li>Set IPv4 configuration type to Static</li>
+</ul>
+<p>Scroll down to <code>Static IPv4 configuration</code> to define an IP address for your VLAN</p>
+<p><img src="interface_settings_static.png" alt="interface_settings_static.png"></p>
+<p>This can be a variant of any <a href="https://en.wikipedia.org/wiki/Private_network#Private_IPv4_addresses">private network</a> address, as long as its different from your primary LAN.</p>
+<p>I like using the <code>10.x.x.x/8</code> range. You won&rsquo;t need as many addresses as it allows, however you get flexibility to create naming conventions.</p>
+<p>As this is for VLAN 10, lets set the <code>IPv4 address</code> to <code>10.10.10.1/24</code></p>
+<p>The <code>/24</code> subnet mask allows for 254 IP addresses on this VLAN. If you need more than this, I&rsquo;m going to assume you don&rsquo;t need this article.</p>
+<p>Be sure to save and apply changes before continuing.</p>
+<h3 id="configuring-the-dhcp-server">Configuring the DHCP server</h3>
+<p>Under <code>Services -&gt; DHCP Server</code> you should now be able to enable DHCP for your VLAN interface</p>
+<p><img src="dchp_settings.png" alt="dchp_settings.png"></p>
+<p>Scroll down to <code>Primary Address Pool</code></p>
+<p><img src="dchp_settings_address.png" alt="dchp_settings_address.png"></p>
+<p>You&rsquo;ll need to specify a range from which your DHCP server can assign addresses. Typically we leave some space for static IP assignments to avoid conflicting addresses.</p>
+<p>If you don&rsquo;t care about static IP addresses you can start at <code>10.10.10.2</code> (we still need to make sure that we don&rsquo;t conflict with the interface IP!)</p>
+<p>Save and Apply Changes</p>
+<h3 id="configuring-nat-rules">Configuring NAT rules</h3>
+<ul>
+<li>add nat rules</li>
+</ul>
+<h2 id="configuring-your-vm">Configuring your VM</h2>
+<p>Now that everything is set up, all you need to do is add a VLAN tag to the network device connected to the LAN bridge on
+your VM.</p>
+<blockquote class="important"><p>The subnet mask must be the same on the interface</p>
+</blockquote>
+<p>Reboot your VM and it should automatically pick up a an address as per the above DHCP configuration.</p>
+<h3 id="configuring-static-ip-assignments">Configuring static IP assignments</h3>
+<ul>
+<li>configure static ipv4</li>
+</ul>
+
+<footer>
+  
+  <section class="tags">
+    <div>Tags:</div>
+    <ul>
+        <li><a href="/tags/proxmox/">Proxmox</a></li>
+        <li><a href="/tags/pfsense/">Pfsense</a></li>
+        <li><a href="/tags/networking/">Networking</a></li>
+    </ul>
+  </section>
+
+
+
+  <section class="github">
+    Found an issue? Submit a PR
+    
+    <a href="https://github.com/scottlimmer/scottlimmer.github.io/blob/main/docs/content/posts/isolating-vms-in-proxmox-using-vlan/index.md">posts/isolating-vms-in-proxmox-using-vlan/index.md</a>
+</section>
+
+</footer>
+
+    </article>
+    <footer>
+      <p>Copyright 2024. All rights reserved.</p>
+
+    </footer>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en-au" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Locally Testing Passbolt | scottlimmer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=REM:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/syntax.min.7e1c034d92eb72a6eaab11effdbcbe9c91fd5d6db1c6df150c5d597be3797feb.css">
+
+      <link rel="stylesheet" href="/css/main.min.b60e6cbc5e0661b9cfd21fef4df778ed0be4e580a1b3e42d9fbb94f78a11d66d.css" integrity="sha256-tg5svF4GYbnP0h/vTfd47Qvk5YChs&#43;Qtn7uU94oR1m0=" crossorigin="anonymous">
+
+
+      <script src="/js/main.23cd0c7d837263b9eaeb96ee2d9ccfa2969daa3fa00fa1c1fe8701a9b87251a1.js" integrity="sha256-I80MfYNyY7nq65buLZzPopadqj&#43;gD6HB/ocBqbhyUaE=" crossorigin="anonymous"></script>
+
+
+</head>
+<body>
+  <sidebar>
+    <h1>scottlimmer</h1>
+
+  <nav class="primary">
+    <ul>
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a href="/about/">About</a>
+    </li>
+    <li>
+      <a href="/work/">Work</a>
+    </li>
+    <li>
+      <a aria-current="true" class="ancestor" href="/posts/">Posts</a>
+    </li>
+    <li>
+      <a href="/tags/">Tags</a>
+    </li>
+    </ul>
+  </nav>
+
+
+  </sidebar>
+
+  
+  
+  <main class="">
+    <article>
+      
+<header>
+  <h1>Locally Testing Passbolt</h1>
+  
+  
+  <time datetime="2023-11-04T04:23:52&#43;00:00">November 4, 2023</time>
+
+</header>
+
+
+<h2 id="checkout-passbolt-project">Checkout passbolt project</h2>
+<p>Expand with docker-compose with mailpit example.</p>
+<h2 id="setting-up-your-local-test">Setting up your local test</h2>
+<h3 id="retrieve-data-from-production">Retrieve data from production</h3>
+<h4 id="get-a-copy-of-the-database">Get a copy of the database</h4>
+<p>From the production database</p>
+<h5 id="level-5">Level 5</h5>
+<h6 id="level-6">Level 6</h6>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo -i
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /var/www_data/passbolt
+</span></span><span class="line"><span class="cl">docker <span class="nb">exec</span> -i passbolt-db-1 bash -c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="s1">&#39;mysqldump -u${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE}&#39;</span> &gt; <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  passbolt-20231102.sql
+</span></span></code></pre></div><h4 id="get-copy-of-the-keys">Get copy of the keys</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker cp passbolt-passbolt-1:/etc/passbolt/gpg/serverkey_private.asc <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  serverkey_private-&lt;date&gt;.asc
+</span></span><span class="line"><span class="cl">docker cp passbolt-passbolt-1:/etc/passbolt/gpg/serverkey.asc <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  serverkey-&lt;date&gt;.asc
+</span></span></code></pre></div><h4 id="copy-files-locally">Copy files locally</h4>
+<p>Use WinSCP / scp / etc.  You&rsquo;ll like need to give your login permissions</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">chown -R &lt;username&gt; serverkey*20231102.asc
+</span></span></code></pre></div><h2 id="copy-to-local-passbolt-project">Copy to local passbolt project</h2>
+<h3 id="setup-env">Setup .env</h3>
+<blockquote class="note"><p>The URL will need to be https:// and include port 9483 for local testing</p>
+</blockquote>
+<p>Copy <code>.env.local.example</code> to <code>.env</code>
+Populate variables for local testing:</p>
+<ul>
+<li><code>PASSBOLT_GPG_SERVER_KEY_FINGERPRINT</code> <code>&lt;see-below&gt;</code></li>
+<li><code>PASSBOLT_KEY_EMAIL</code> <code>&lt;name@domain.com&gt;</code></li>
+<li><code>SQL_DUMP_FILE</code> <code>&lt;name-of-exported-prod-db-file.sql&gt;</code></li>
+</ul>
+<h4 id="retrieving-key-fingerprint">Retrieving key fingerprint</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo gpg --show-keys &lt;public-serverkey.asc-from-before&gt; <span class="p">|</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  grep -Ev <span class="s2">&#34;^(pub|sub|uid|</span>$<span class="s2">)&#34;</span> <span class="p">|</span> tr -d <span class="s1">&#39; &#39;</span>
+</span></span></code></pre></div><h3 id="update-local-hosts-file">Update local hosts file</h3>
+<p>Update your local hosts file for the value you provided in <code>APP_FULL_BASE_URL</code></p>
+<h3 id="create-a-local-browser-test">Create a local browser test</h3>
+<ul>
+<li>Create a separate profile in Firefox/Chrome as testing will override your current Passbolt plugin configuration</li>
+</ul>
+<h2 id="performing-an-upgrade">Performing an upgrade</h2>
+<h3 id="updating-local-docker-compose">Updating local docker-compose</h3>
+<ul>
+<li>
+<p>Create new feature branch. I normally forward the email from Passbolt announcing a new version to the helpdesk so there is a ticket to reference</p>
+</li>
+<li>
+<p>Determine latest version from: <a href="https://hub.docker.com/r/passbolt/passbolt/tags">https://hub.docker.com/r/passbolt/passbolt/tags</a></p>
+<ul>
+<li>We want the latest tag that looks like <code>&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;-&lt;build&gt;-ce</code></li>
+</ul>
+<p><img src="passbolt-docker-tag.png" alt="passbolt-docker-tag.png"></p>
+</li>
+<li>
+<p>Compare <code>docker-compose.yaml</code> to <a href="https://github.com/passbolt/passbolt_docker/blob/master/docker-compose/docker-compose-ce.yaml">https://github.com/passbolt/passbolt_docker/blob/master/docker-compose/docker-compose-ce.yaml</a> for version/configuration changes</p>
+<ul>
+<li>The <code>env_file</code>, <code>${DB_PASSWORD}</code>, <code>APP_FULL_BASE_URL</code> and ports <code>9480:80</code> customisations are deliberate and required for our setup.</li>
+<li>Most likely to change is the database version dependency</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-docker" data-lang="docker"><span class="line"><span class="cl">db:<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>    image: mariadb:10.11<span class="err">
+</span></span></span></code></pre></div></li>
+<li>
+<p>Update Passbolt <code>image:</code> in <code>docker-compose.yaml</code> to tag above</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-docker" data-lang="docker"><span class="line"><span class="cl">...<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>passbolt:<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>    image: passbolt/passbolt-4.3.0-1-ce<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span>...<span class="err">
+</span></span></span></code></pre></div></li>
+</ul>
+<h2 id="testing-upgrade">Testing upgrade</h2>
+<h3 id="cleanup-first">Cleanup first</h3>
+<p>If you&rsquo;ve done an upgrade before, you&rsquo;ll need to remove all volumes so that it&rsquo;s truly a fresh install.</p>
+<blockquote class="danger"><p>This destroys all data without confirmation. Do not run anywhere else.</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker compose down -v
+</span></span></code></pre></div><h3 id="start-passbolt">Start passbolt</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> /path/to/passbolt/project
+</span></span><span class="line"><span class="cl">docker compose up -d
+</span></span></code></pre></div><h3 id="copy-keys-into-container">Copy keys into container</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> /path/to/passbolt/project
+</span></span><span class="line"><span class="cl">docker cp serverkey_private-20231102.asc <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  passbolt-passbolt-1:/etc/passbolt/gpg/serverkey_private.asc
+</span></span><span class="line"><span class="cl">docker cp serverkey-20231102.asc <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  passbolt-passbolt-1:/etc/passbolt/gpg/serverkey.asc
+</span></span></code></pre></div><h4 id="ensure-permissions-are-set-correctly">Ensure permissions are set correctly</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker <span class="nb">exec</span> -it passbolt-passbolt-1 chown www-data:www-data <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  /etc/passbolt/gpg/serverkey.asc  
+</span></span><span class="line"><span class="cl">docker <span class="nb">exec</span> -it passbolt-passbolt-1 chown www-data:www-data <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  /etc/passbolt/gpg/serverkey_private.asc  
+</span></span><span class="line"><span class="cl">docker <span class="nb">exec</span> -it passbolt-passbolt-1 chmod <span class="m">440</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  /etc/passbolt/gpg/serverkey.asc  
+</span></span><span class="line"><span class="cl">docker <span class="nb">exec</span> -it passbolt-passbolt-1 chmod <span class="m">440</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  /etc/passbolt/gpg/serverkey_private.asc
+</span></span></code></pre></div><h3 id="start-account-recovery">Start account recovery</h3>
+<ul>
+<li>Navigate to <code>https://passbolt.dev.test:9480/recover</code> in the new browser profile</li>
+<li>Accept the unsecure local SSL certificate warning</li>
+<li>Provide email. This should be your email</li>
+<li>Open http://localhost:8025 to retrieve the email</li>
+<li>Click start recovery</li>
+<li>Download the extension</li>
+<li>Allow install</li>
+<li>Click Next on passbolt congratulations screen</li>
+<li>Supply your private key</li>
+<li>Enter your password</li>
+<li>Generate a new security token</li>
+<li>You should now be logged in</li>
+</ul>
+<h2 id="test-new-install">Test new install</h2>
+<h3 id="from-browser">From browser</h3>
+<ul>
+<li>Edit a password and view it in plaintext</li>
+<li>Text search box</li>
+<li>Go to users and check group membership</li>
+</ul>
+<h3 id="from-command-line">From command line</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo -i
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /path/to/passbolt/directory
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## Start a shell in the docker container</span>
+</span></span><span class="line"><span class="cl">docker <span class="nb">exec</span> -it passbolt-passbolt-1 /bin/bash
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## inside docker terminal</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Start www-user shell</span>
+</span></span><span class="line"><span class="cl">su -s /bin/bash www-data
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## Check data integrity</span>
+</span></span><span class="line"><span class="cl">./bin/cake passbolt datacheck --hide-success-details
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## Check version is up-to-date</span>
+</span></span><span class="line"><span class="cl">./bin/cake passbolt version
+</span></span></code></pre></div><blockquote class="success"><p>If all this passes, we should be good to do the live upgrade</p>
+</blockquote>
+<h2 id="clean-up-files">Clean-up files</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## Delete containers and volumes</span>
+</span></span><span class="line"><span class="cl">docker compose down -v
+</span></span></code></pre></div><ul>
+<li>Delete downloaded <code>*.asc</code> files</li>
+<li>Delete downloaded <code>*.sql</code> files</li>
+</ul>
+
+<footer>
+  
+  <section class="tags">
+    <div>Tags:</div>
+    <ul>
+        <li><a href="/tags/passbolt/">Passbolt</a></li>
+        <li><a href="/tags/docker/">Docker</a></li>
+    </ul>
+  </section>
+
+
+
+  <section class="github">
+    Found an issue? Submit a PR
+    
+    <a href="https://github.com/scottlimmer/scottlimmer.github.io/blob/main/docs/content/posts/locally-testing-passbolt/index.md">posts/locally-testing-passbolt/index.md</a>
+</section>
+
+</footer>
+
+    </article>
+    <footer>
+      <p>Copyright 2024. All rights reserved.</p>
+
+    </footer>
+  </main>
+
+</body>
+</html>

@@ -5,3 +5,6 @@ docker run --rm --volume=".:/srv/jekyll:Z" -it jekyll/jekyll jekyll new --skip-b
 
 ## Run bundle
 docker run --rm --volume=".:/srv/jekyll:Z" -it jekyll/jekyll bundle install
+
+# Actions
+- TODO: Add labels to pages on home (work/posts)

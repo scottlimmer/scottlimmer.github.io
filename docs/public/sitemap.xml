@@ -2,17 +2,69 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost/about/</loc>
+    <loc>http://localhost:1313/posts/configuring_gpu_passthrough_proxmox/</loc>
+    <lastmod>2024-07-10T11:51:06+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/gpu/</loc>
+    <lastmod>2024-07-10T11:51:06+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/linux/</loc>
+    <lastmod>2024-07-10T11:51:06+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/proxmox/</loc>
+    <lastmod>2024-07-10T11:51:06+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2024-07-10T11:51:06+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/database/</loc>
+    <lastmod>2024-07-09T11:28:47+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/detecting_decimal_from_oracle_number_type/</loc>
+    <lastmod>2024-07-09T11:28:47+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/oracle/</loc>
+    <lastmod>2024-07-09T11:28:47+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/determine-block-direction/</loc>
+    <lastmod>2024-06-18T12:09:25+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/work/victorian-wader-study-group/</loc>
+    <lastmod>2024-06-17T11:30:08+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/mirroring-bitbucket-to-github/</loc>
+    <lastmod>2023-11-21T09:48:25+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/isolating-vms-in-proxmox-using-vlan/</loc>
+    <lastmod>2023-11-20T10:00:35+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/networking/</loc>
+    <lastmod>2023-11-20T10:00:35+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/pfsense/</loc>
+    <lastmod>2023-11-20T10:00:35+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/about/</loc>
     <lastmod>2023-11-17T20:39:46+00:00</lastmod>
   </url><url>
-    <loc>http://localhost/posts/</loc>
+    <loc>http://localhost:1313/work/</loc>
+    <lastmod>2023-11-17T20:39:46+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/docker/</loc>
+    <lastmod>2023-11-04T04:23:52+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/locally-testing-passbolt/</loc>
+    <lastmod>2023-11-04T04:23:52+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/passbolt/</loc>
+    <lastmod>2023-11-04T04:23:52+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/</loc>
     <lastmod>2023-01-01T08:30:00-07:00</lastmod>
   </url><url>
-    <loc>http://localhost/</loc>
+    <loc>http://localhost:1313/</loc>
     <lastmod>2023-01-01T08:00:00-07:00</lastmod>
   </url><url>
-    <loc>http://localhost/categories/</loc>
-  </url><url>
-    <loc>http://localhost/tags/</loc>
+    <loc>http://localhost:1313/categories/</loc>
   </url>
 </urlset>
